@@ -41,7 +41,8 @@ class MemoryResult:
     def __init__(self, id: str, payload: dict, score: float = None):
         self.id = id
         self.payload = payload
-        self.score = score
+        # Redis fix for https://github.com/mem0ai/mem0/issues/4453
+        self.score = 1.0 - score
 
 
 class RedisDB(VectorStoreBase):
