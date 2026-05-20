@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class OutputData(BaseModel):
     id: Optional[str]  # memory id
-    score: Optional[float]  # distance
+    score: Optional[float]  # similarity score (1 - distance)
     payload: Optional[Dict]  # metadata
 
 
@@ -99,7 +99,7 @@ class ChromaDB(VectorStoreBase):
         for i in range(max_length):
             entry = OutputData(
                 id=ids[i] if isinstance(ids, list) and ids and i < len(ids) else None,
-                score=(distances[i] if isinstance(distances, list) and distances and i < len(distances) else None),
+                score=(1 - distances[i] if isinstance(distances, list) and distances and i < len(distances) else None),
                 payload=(metadatas[i] if isinstance(metadatas, list) and metadatas and i < len(metadatas) else None),
             )
             result.append(entry)
@@ -120,6 +120,7 @@ class ChromaDB(VectorStoreBase):
         collection = self.client.get_or_create_collection(
             name=name,
             embedding_function=embedding_fn,
+            metadata={"hnsw:space": "cosine"},
         )
         return collection
 
