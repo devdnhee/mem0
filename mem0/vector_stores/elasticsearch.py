@@ -35,8 +35,9 @@ class ElasticsearchDB(VectorStoreBase):
                 headers= config.headers or {},
             )
         else:
+            scheme = "http" if not config.use_ssl else "https"
             self.client = Elasticsearch(
-                hosts=[f"{config.host}" if config.port is None else f"{config.host}:{config.port}"],
+                hosts=[f"{scheme}://{config.host}" if config.port is None else f"{scheme}://{config.host}:{config.port}"],
                 basic_auth=(config.user, config.password) if (config.user and config.password) else None,
                 verify_certs=config.verify_certs,
                 ca_certs=config.ca_certs,
